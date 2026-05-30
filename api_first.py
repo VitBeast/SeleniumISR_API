@@ -41,14 +41,12 @@ class Pets:
             "email": EMAIL,
             "password": PASSWORD
         }
-        # 1. Сначала пробуем авторизоваться
         res = requests.post(self.base_url + 'login', json=data)
         status = res.status_code
         response_json = res.json()
 
-        # 2. Если сервер вернул ошибку или нет токена — регистрируем этот email на лету
         if status != 200 or 'token' not in response_json:
-            print(f"Вход не удался. Регистрируем динамического пользователя: {EMAIL}")
+            print(f"Login failed. Registering a dynamic user...: {EMAIL}")
             reg_data = {
                 "email": EMAIL,
                 "password": PASSWORD,
@@ -58,14 +56,13 @@ class Pets:
             status = res.status_code
             response_json = res.json()
 
-        # 3. Финальная проверка на наличие токена в ответе
         if 'token' not in response_json:
-            print(f"Критическая ошибка API! Сервер вернул: {response_json}")
+            print(f"Critical API error! Server returned: {response_json}")
             return None, status, None
 
         self.token = response_json['token']
         self.user_id = response_json['id']
-        print(f"Токен успешно получен! Token: {self.token}")
+        print(f"Token successfully received! Token: {self.token}")
         return self.token, 200, self.user_id
 
     def get_list_users(self):
@@ -111,7 +108,6 @@ class Pets:
         pet_id, _ = self.get_pet()
         headers = {'Authorization': f'Bearer {self.token}'}
 
-        # Безопасное открытие файла. Убедитесь, что папка tests/photo/ и файл cat.jpg существуют
         files = {'pic': ('cat.jpg', open('tests/photo/cat.jpg', 'rb'), 'image/jpeg')}
 
         res = requests.post(self.base_url + f'pet/{pet_id}/image', headers=headers, files=files)
@@ -134,7 +130,6 @@ class Pets:
         return status
 
 
-# Данный блок защищает от автоматического выполнения при импорте в PyTest
 if __name__ == '__main__':
     p = Pets()
     p.get_registered()
