@@ -2,12 +2,10 @@ import os
 import pytest
 from api_first import Pets
 
-# Создаем единый экземпляр класса для последовательных тестов
 pt = Pets()
 
 
 def test_register_and_delete_user():
-    # Используем изолированный объект для регистрации, чтобы не сбивать авторизацию основного
     pets_register = Pets()
     status = pets_register.get_registered()
     assert status == 200
